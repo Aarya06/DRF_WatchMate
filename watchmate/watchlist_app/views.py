@@ -2,6 +2,7 @@
 # from django.shortcuts import render
 # from .models import Movie
 
+# DJANGO VIEWS
 
 # def movie_list(req):
 #     movies = Movie.objects.all()
