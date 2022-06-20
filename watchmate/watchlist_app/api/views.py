@@ -1,10 +1,49 @@
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import WatchlistSerializer, StreamingPlatformSerializer
-from ..models import WatchList, StreamingPlatform
-from rest_framework import status
+from .serializers import WatchlistSerializer, StreamingPlatformSerializer, ReviewSerializer
+from ..models import WatchList, StreamingPlatform, Review
+from rest_framework import status, generics
 
+# VIEWS USING GENERIC VIEW
+    
+class ReviewListGV(generics.ListCreateAPIView):
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    
+    # OVERWITE QUERYSET METHOD
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Review.objects.filter(watchlist=pk)
+    
+    # OVERWITE CREATE METHOD
+    def perform_create(self, serializer):
+        pk = self.kwargs['pk']
+        watchlist = WatchList.objects.get(pk=pk)
+        
+        serializer.save(watchlist=watchlist)
+    
+class ReviewGV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+# # VIEWS USING MIXINS    
+# class ReviewListGV(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+    
+# class ReviewGV(mixins.RetrieveModelMixin, generics.GenericAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
 
 class WatchListAV(APIView):
 
